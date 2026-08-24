@@ -2,7 +2,8 @@ const cards = document.querySelectorAll(".card");
 const lists = document.querySelectorAll(".list");
 let cardCounter = 1;
 
-const addButtons = document.querySelectorAll(".add-btn");
+const taskForm = document.querySelector("#task-form");
+const taskInput = document.querySelector("#task-input");
 document.querySelectorAll(".card").forEach(addDeleteButton);
 
 for (const card of cards) {
@@ -44,7 +45,7 @@ function dragDrop(e) {
   const id = e.dataTransfer.getData("text/plain");
   const card = document.getElementById(id);
 
-  this.appendChild(card);
+  this.querySelector(".cards").appendChild(card);
   this.classList.remove("over");
 
   // Remove old status
@@ -69,8 +70,10 @@ function addDeleteButton(card) {
   span.textContent = text;
 
   const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "✖";
+  deleteBtn.textContent = "×";
   deleteBtn.className = "delete-btn";
+  deleteBtn.type = "button";
+  deleteBtn.setAttribute("aria-label", `Delete ${text}`);
 
   deleteBtn.addEventListener("click", () => {
     card.remove();
@@ -80,31 +83,25 @@ function addDeleteButton(card) {
   card.appendChild(deleteBtn);
 }
 
-addButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const list = button.parentElement;
-    const input = list.querySelector(".task-input");
+taskForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const taskName = taskInput.value.trim();
+  if (!taskName) return;
 
-    if (input.value.trim() === "") return;
+  const card = document.createElement("div");
 
-    const card = document.createElement("div");
+  card.className = "card todo";
+  card.textContent = taskName;
+  card.draggable = true;
+  card.id = `card${cardCounter++}`;
+  addDeleteButton(card);
 
-    card.className = "card todo";
-    card.textContent = input.value;
-    card.draggable = true;
-    card.id = `card${cardCounter++}`;
-    addDeleteButton(card);
+  card.addEventListener("dragstart", dragStart);
+  card.addEventListener("dragend", dragEnd);
 
-    // Enable drag and drop
-    card.addEventListener("dragstart", dragStart);
-    card.addEventListener("dragend", dragEnd);
+  const cardsContainer = document.querySelector("#list1 .cards");
+  cardsContainer.appendChild(card);
 
-    // Insert before the input
-    list.insertBefore(card, input);
-
-    const cardsContainer = list.querySelector(".cards");
-    cardsContainer.appendChild(card);
-
-    input.value = "";
-  });
+  taskInput.value = "";
+  taskInput.focus();
 });

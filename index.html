@@ -7,29 +7,57 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="container">
-      <h1>Simple Kanban Board</h1>
+    <main class="container">
+      <header class="page-header">
+        <h1>Task board</h1>
+        <p class="subtitle">
+          Capture your next task, then move it through each stage.
+        </p>
+      </header>
+
+      <form class="task-composer" id="task-form">
+        <div class="composer-copy">
+          <label for="task-input">Add a new task</label>
+          <span>What would you like to get done?</span>
+        </div>
+        <div class="composer-controls">
+          <input
+            type="text"
+            id="task-input"
+            class="task-input"
+            placeholder="e.g. Prepare project outline"
+            autocomplete="off"
+          />
+          <button class="add-btn" type="submit">Add task</button>
+        </div>
+      </form>
 
       <div class="board">
         <div class="list" id="list1">
-          <h2>To do</h2>
-          <div class="cards"></div>
-
-          <div class="add-task">
-            <input type="text" class="task-input" placeholder="New task" />
-            <button class="add-btn">Add Task</button>
+          <div class="list-header">
+            <span class="status-dot todo-dot"></span>
+            <h2>To do</h2>
           </div>
+          <div class="cards"></div>
         </div>
 
         <div class="list" id="list2">
-          <h2>In Progress</h2>
+          <div class="list-header">
+            <span class="status-dot progress-dot"></span>
+            <h2>In progress</h2>
+          </div>
+          <div class="cards"></div>
         </div>
 
         <div class="list" id="list3">
-          <h2>Done</h2>
+          <div class="list-header">
+            <span class="status-dot done-dot"></span>
+            <h2>Done</h2>
+          </div>
+          <div class="cards"></div>
         </div>
       </div>
-    </div>
+    </main>
     <script src="script.js"></script>
   </body>
 </html>

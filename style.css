@@ -1,136 +1,251 @@
+:root {
+  --ink: #172033;
+  --muted: #697386;
+  --line: #e5e9f2;
+  --surface: #fff;
+  --canvas: #f5f7fb;
+  --accent: #6657e8;
+  --accent-dark: #5143ce;
+}
 * {
-  padding: 0;
-  margin: 0;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-
 body {
-  font-family: sans-serif;
-  background-color: #f7f9fc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, #eeebff 0, transparent 30rem),
+    var(--canvas);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
-
+button,
+input {
+  font: inherit;
+}
 .container {
-  text-align: center;
-  width: 100%;
-  padding: 1.2rem;
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 2rem;
-}
-
-.board {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-start;
-  width: 100%;
-  max-width: 1500px;
+  width: min(1180px, calc(100% - 40px));
   margin: 0 auto;
-  gap: 50px;
+  padding: 64px 0;
 }
-
+.page-header {
+  margin-bottom: 28px;
+}
+.eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+.subtitle {
+  margin-top: 10px;
+  color: var(--muted);
+}
+.task-composer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 32px;
+  padding: 22px 24px;
+  border: 1px solid rgba(102, 87, 232, 0.16);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(31, 38, 62, 0.07);
+}
+.composer-copy {
+  flex: 0 0 auto;
+}
+.composer-copy label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 750;
+}
+.composer-copy span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.composer-controls {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  max-width: 620px;
+}
+.task-input {
+  min-width: 0;
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #d9deea;
+  border-radius: 10px;
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.task-input::placeholder {
+  color: #9ba4b5;
+}
+.task-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(102, 87, 232, 0.13);
+}
+.add-btn {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  font-weight: 750;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.add-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
 .list {
-  background-color: #e3e4e8;
-  padding: 1rem;
-  border-radius: 8px;
-  width: 30%;
-  min-height: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  min-height: 430px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s;
 }
-
+.list.over {
+  border-color: var(--accent);
+  background: rgba(238, 235, 255, 0.8);
+  transform: translateY(-2px);
+}
+.list-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+}
 .list h2 {
-  color: #555;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
 }
-
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.todo-dot {
+  background: #f06a78;
+}
+.progress-dot {
+  background: #e9aa35;
+}
+.done-dot {
+  background: #42ad78;
+}
+.cards {
+  min-height: 355px;
+}
 .card {
-  background-color: white;
-  color: #333;
-  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
   margin-bottom: 10px;
-  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 3px 12px rgba(31, 38, 62, 0.05);
   cursor: grab;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
 }
-
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(31, 38, 62, 0.09);
+}
 .card:active {
   cursor: grabbing;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
-.list.over {
-  background-color: #d1d3d8;
+.card.todo {
+  border-left-color: #f06a78;
 }
-
-.task-input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 10px;
+.card.progress {
+  border-left-color: #e9aa35;
 }
-
-.add-btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 8px;
-  cursor: pointer;
+.card.done {
+  border-left-color: #42ad78;
 }
-
-.card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-}
-
 .card span {
   flex: 1;
   word-break: break-word;
 }
-
 .delete-btn {
-  border: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 7px;
+  color: #929bad;
   background: transparent;
-  color: red;
   cursor: pointer;
-  font-size: 16px;
+  line-height: 1;
 }
-
 .delete-btn:hover {
-  color: darkred;
+  color: #d84253;
+  background: #fff0f2;
 }
-
-.todo {
-  background-color: #ffb3b3;
-}
-
-.progress {
-  background-color: #fff3a3;
-}
-
-.done {
-  background-color: #b7f5b7;
-}
-
-@media (max-width: 768px) {
-  .board {
-    flex-direction: column;
-    align-items: center;
+@media (max-width: 760px) {
+  .container {
+    width: min(100% - 24px, 620px);
+    padding: 36px 0;
   }
-
+  .task-composer {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .board {
+    grid-template-columns: 1fr;
+  }
   .list {
-    width: 80%;
-    margin-bottom: 20px;
+    min-height: 240px;
+  }
+  .cards {
+    min-height: 170px;
+  }
+}
+@media (max-width: 460px) {
+  .composer-controls {
+    flex-direction: column;
+  }
+  .add-btn {
+    width: 100%;
   }
 }
