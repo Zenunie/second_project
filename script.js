@@ -1,15 +1,14 @@
-const cards = document.querySelectorAll(".card");
+const STORAGE_KEY = "kanbanTasks";
 const lists = document.querySelectorAll(".list");
-let cardCounter = 1;
-
 const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
-document.querySelectorAll(".card").forEach(addDeleteButton);
+let cardCounter = 0;
 
-for (const card of cards) {
-  card.addEventListener("dragstart", dragStart);
-  card.addEventListener("dragend", dragEnd);
-}
+const statusToList = {
+  todo: "list1",
+  progress: "list2",
+  done: "list3",
+};
 
 for (const list of lists) {
   list.addEventListener("dragover", dragOver);
@@ -18,69 +17,90 @@ for (const list of lists) {
   list.addEventListener("drop", dragDrop);
 }
 
-function dragStart(e) {
-  // this allows the drop location to know which element is being moved when you release it
-  e.dataTransfer.setData("text/plain", this.id);
-}
+function createCard(text, status = "todo", id = `card-${Date.now()}-${cardCounter++}`) {
+  const card = document.createElement("div");
+  card.className = `card ${status}`;
+  card.draggable = true;
+  card.id = id;
 
-function dragEnd() {
-  console.log("Drag ended");
-}
-
-function dragOver(e) {
-  // this line is important because by default, browsers don't allow you to drop elements onto other elements.
-  e.preventDefault();
-}
-
-function dragEnter(e) {
-  e.preventDefault();
-  this.classList.add("over");
-}
-
-function dragLeave(e) {
-  this.classList.remove("over");
-}
-
-function dragDrop(e) {
-  const id = e.dataTransfer.getData("text/plain");
-  const card = document.getElementById(id);
-
-  this.querySelector(".cards").appendChild(card);
-  this.classList.remove("over");
-
-  // Remove old status
-  card.classList.remove("todo", "progress", "done");
-
-  // Add new status
-  if (this.id === "list1") {
-    card.classList.add("todo");
-  } else if (this.id === "list2") {
-    card.classList.add("progress");
-  } else if (this.id === "list3") {
-    card.classList.add("done");
-  }
-}
-
-function addDeleteButton(card) {
-  const text = card.textContent;
-
-  card.textContent = "";
-
-  const span = document.createElement("span");
-  span.textContent = text;
+  const label = document.createElement("span");
+  label.textContent = text;
 
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "×";
   deleteBtn.className = "delete-btn";
   deleteBtn.type = "button";
   deleteBtn.setAttribute("aria-label", `Delete ${text}`);
-
   deleteBtn.addEventListener("click", () => {
     card.remove();
+    saveTasks();
   });
 
-  card.appendChild(span);
-  card.appendChild(deleteBtn);
+  card.append(label, deleteBtn);
+  card.addEventListener("dragstart", dragStart);
+  return card;
+}
+
+function saveTasks() {
+  const tasks = [...document.querySelectorAll(".card")].map((card) => ({
+    id: card.id,
+    text: card.querySelector("span").textContent,
+    status: ["todo", "progress", "done"].find((status) =>
+      card.classList.contains(status),
+    ),
+  }));
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function loadTasks() {
+  let tasks = [];
+
+  try {
+    tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch (error) {
+    console.warn("Saved tasks could not be loaded.", error);
+  }
+
+  for (const task of tasks) {
+    if (!task.text || !statusToList[task.status]) continue;
+
+    const card = createCard(task.text, task.status, task.id);
+    document.querySelector(`#${statusToList[task.status]} .cards`).appendChild(card);
+  }
+}
+
+function dragStart(event) {
+  event.dataTransfer.setData("text/plain", this.id);
+}
+
+function dragOver(event) {
+  event.preventDefault();
+}
+
+function dragEnter(event) {
+  event.preventDefault();
+  this.classList.add("over");
+}
+
+function dragLeave(event) {
+  if (!this.contains(event.relatedTarget)) this.classList.remove("over");
+}
+
+function dragDrop(event) {
+  event.preventDefault();
+  const card = document.getElementById(event.dataTransfer.getData("text/plain"));
+  if (!card) return;
+
+  this.querySelector(".cards").appendChild(card);
+  this.classList.remove("over");
+  card.classList.remove("todo", "progress", "done");
+
+  const status = Object.keys(statusToList).find(
+    (key) => statusToList[key] === this.id,
+  );
+  card.classList.add(status);
+  saveTasks();
 }
 
 taskForm.addEventListener("submit", (event) => {
@@ -88,20 +108,12 @@ taskForm.addEventListener("submit", (event) => {
   const taskName = taskInput.value.trim();
   if (!taskName) return;
 
-  const card = document.createElement("div");
-
-  card.className = "card todo";
-  card.textContent = taskName;
-  card.draggable = true;
-  card.id = `card${cardCounter++}`;
-  addDeleteButton(card);
-
-  card.addEventListener("dragstart", dragStart);
-  card.addEventListener("dragend", dragEnd);
-
-  const cardsContainer = document.querySelector("#list1 .cards");
-  cardsContainer.appendChild(card);
+  const card = createCard(taskName);
+  document.querySelector("#list1 .cards").appendChild(card);
+  saveTasks();
 
   taskInput.value = "";
   taskInput.focus();
 });
+
+loadTasks();
