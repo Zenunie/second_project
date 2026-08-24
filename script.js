@@ -17,7 +17,11 @@ for (const list of lists) {
   list.addEventListener("drop", dragDrop);
 }
 
-function createCard(text, status = "todo", id = `card-${Date.now()}-${cardCounter++}`) {
+function createCard(
+  text,
+  status = "todo",
+  id = `card-${Date.now()}-${cardCounter++}`,
+) {
   const card = document.createElement("div");
   card.className = `card ${status}`;
   card.draggable = true;
@@ -66,7 +70,9 @@ function loadTasks() {
     if (!task.text || !statusToList[task.status]) continue;
 
     const card = createCard(task.text, task.status, task.id);
-    document.querySelector(`#${statusToList[task.status]} .cards`).appendChild(card);
+    document
+      .querySelector(`#${statusToList[task.status]} .cards`)
+      .appendChild(card);
   }
 }
 
@@ -89,7 +95,9 @@ function dragLeave(event) {
 
 function dragDrop(event) {
   event.preventDefault();
-  const card = document.getElementById(event.dataTransfer.getData("text/plain"));
+  const card = document.getElementById(
+    event.dataTransfer.getData("text/plain"),
+  );
   if (!card) return;
 
   this.querySelector(".cards").appendChild(card);
